@@ -3,15 +3,18 @@ const port=8000;
 const app=express()
 const body_parser=require('body-parser')
 const crypto = require('crypto');
+const cors=require('cors')
+const routes=require('./route')
 
 app.use(body_parser.urlencoded({extended:false}))
-// app.use(express.json())
-app.use( express.json( { verify: ( req, res, buffer ) => { req.rawBody = buffer; } } ) );
+app.use(cors())
+app.use(express.json())
+// app.use( express.json( { verify: ( req, res, buffer ) => { req.rawBody = buffer; } } ) );
+app.use('/',routes)
 
-
-app.get('/',(req,res)=>{
-    res.send("webhook example")
-})
+// app.get('/',(req,res)=>{
+//     res.send("webhook example")
+// })
 
 
 // app.get('/webhook', (req, res) => {
@@ -20,11 +23,11 @@ app.get('/',(req,res)=>{
 //      res.status(200).send('Webhook received!');
 // });
 
-app.post('/webhook', (req, res) => {
-    const event = req.body; 
-    console.log('Received webhook event:', event);
-     res.status(200).send('Webhook received!');
-});
+// app.post('/webhook', (req, res) => {
+//     const event = req.body; 
+//     console.log('Received webhook event:', event);
+//      res.status(200).send('Webhook received!');
+// });
 
 
 
