@@ -4,16 +4,16 @@ const eventEmitter=new event.EventEmitter()
 
 const route=require('./route')
 
-const webhookEventHandler=function(payload){
-    console.log("here is webhookeventhandler",payload)
-}
-eventEmitter.on('webhook',webhookEventHandler)
+// const webhookEventHandler=function(payload){
+//     console.log("here is webhookeventhandler",payload)
+// }
+// eventEmitter.on('webhook',webhookEventHandler)
 
-eventEmitter.emit('webhook')
+// eventEmitter.emit('webhook')
 
-const runWebhook=(payload)=>{
-    eventEmitter.emit('webhook',payload)
-}
+// const runWebhook=(payload)=>{
+//     eventEmitter.emit('webhook',payload)
+// }
 
 
 // const dataStore=[
@@ -46,7 +46,7 @@ const runWebhook=(payload)=>{
 //  }
 
 
-module.exports=runWebhook;
+// module.exports=runWebhook;
 
 
 

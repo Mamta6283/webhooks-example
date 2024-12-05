@@ -1,28 +1,62 @@
 const express=require('express')
 const router=express.Router()
-const runWebhook=require('./event')
+const {runWebhook}=require('./controller/userController')
+const{createUser,getUser}=require('./controller/userController')
+
 router.get('/',(req,res)=>{
     res.send("webhook example")
 })
-router.post('/webhook', (req, res) => {
-    const event = req.body; 
-    console.log('Received webhook event:', event);
-     res.status(200).send('Webhook received!');
+
+router.post('/webhook', createUser,(req,res)=> {
+    // const event = req.body; 
+    // console.log('Received webhook event:', event);
+    
+     const{name} = req.body;
+     console.log(`${name} has successfully stored in database`)
+     res.status(200).json({
+        success:true,
+        messagae:`${name} has succesfully stored in database`
+     });
 });
 
-router.post('/user',(req,res)=>{
-    res.send("user info added ")
-})
 
-router.get('/user',(req,res)=>{
-    res.send('all info get')
-})
+router.post('/webhook',createUser)
 
 
-router.get('/test', (req, res) => {
-    runWebhook('test')
-    res.json('provider work!')
+//cerateuser
+// router.post('/user',createUser)
+
+//getuser
+// router.get('/user',getUser)
+
+
+// router.get('/user',(req,res)=>{
+//     res.send('all info get')
+// })
+
+
+router.get('/webhook', getUser, (req, res) => {
+  const {name}=req.body
+  console.log(name)
+    const user=getUser
+    console.log(user)
+    runWebhook(user)
+
+    res.json({
+        success:true,
+        message:"provider works"
+    })
 })
+
+router.get('/webhook',getUser)
+
+// router.get('/test',(req,res)=>{
+//     runWebhook('test')
+//     res.json({
+//         success:true,
+//         message:"provider works"
+//     })
+// })
 
 
 // router.post('/customer',(req,res)=>{
@@ -43,6 +77,10 @@ router.get('/test', (req, res) => {
 
 //     res.json('webhook works')
 // })
+
+
+
+
 
 module.exports=router;
 

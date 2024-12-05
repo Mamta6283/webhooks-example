@@ -5,8 +5,9 @@ const body_parser=require('body-parser')
 const crypto = require('crypto');
 const cors=require('cors')
 const routes=require('./route')
-
+const mongoose=require('./database/db_connect')
 app.use(body_parser.urlencoded({extended:false}))
+app.use(body_parser.json())
 app.use(cors())
 app.use(express.json())
 // app.use( express.json( { verify: ( req, res, buffer ) => { req.rawBody = buffer; } } ) );
