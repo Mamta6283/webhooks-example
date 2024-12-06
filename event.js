@@ -41,12 +41,12 @@ const route=require('./route')
 //  eventEmitter.emit('webhook')
 
 
-// const runWebhook=(payload)=>{
-//     eventEmitter.emit('webhook',payload)
-//  }
+const runWebhook=(payload)=>{
+    eventEmitter.emit('webhook',payload)
+ }
 
 
-// module.exports=runWebhook;
+module.exports=runWebhook;
 
 
 

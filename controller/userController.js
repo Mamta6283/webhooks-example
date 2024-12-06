@@ -1,10 +1,9 @@
 const userModel = require("../userModel/userModel");
 const event = require("events");
 const eventEmitter = new event.EventEmitter();
-
+const axios = require("axios");
 const createUser = async (req, res) => {
-
-  console.log("request body ",req.body)
+  // console.log("request body ",req.body)
 
   const { name, email, phoneno } = req.body;
   if (!name || !email || !phoneno) {
@@ -18,14 +17,23 @@ const createUser = async (req, res) => {
     // const { name, email, phoneno } = req.body;
 
     const userData = new userModel({ name, email, phoneno });
+    //  const userData= await userModel.find({})
+    // if (!userData) {
+    //   userData = new userModel({name,email,phoneno, interactions: 1 });
+    // } else {
+    //   // Increment the interaction count
+    //   userData.interactions += 1;
+    // }
     await userData.save(userData);
 
+    await notifyWebhook(userData);
+
+    console.log(userData);
     eventEmitter.emit("webhook", { name, email, phoneno });
 
-    console.log(userData)
     res.status(200).json({
       success: true,
-      message: `  ${name} userdata stored successfully`
+      message: `  ${name} userdata stored successfully`,
     });
   } catch (err) {
     res.status(500).json({
@@ -35,9 +43,34 @@ const createUser = async (req, res) => {
   }
 };
 
+// Function to notify webhook
+const notifyWebhook = async (user) => {
+  const webhookUrl =
+    "https://9535-2409-40d1-dc-8f56-1094-d3fb-f093-df5a.ngrok-free.app/webhook";
+
+  try {
+    const response = await axios.post(webhookUrl, user);
+
+    console.log("Webhook notification sent successfully:", response.data);
+    console.log("this is response", response);
+  } catch (error) {
+    console.error("Error sending webhook notification:", error.message);
+  }
+};
+
 const getUser = async (req, res) => {
   try {
-    const userAll = await userModel.find({});
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+
+    const totalUsers = await userModel.countDocuments(); //this is used to count the users in database
+    const userAll = await userModel
+      .find({})
+      .skip((page - 1) * limit) //skip the previous page and data which is already displayed in previous page
+      .limit(limit); //limit to current page
+
+    console.log(userAll);
+
     if (!userAll || userAll.length === 0) {
       res.json({
         message: "no user ",
@@ -45,6 +78,9 @@ const getUser = async (req, res) => {
     } else {
       res.status(500).json({
         success: true,
+        totalUsers, //totalusers
+        currentPage: page,
+        // totalpages: Math.ceil(totalUsers/limit),  //calculating the pages
         message: userAll,
       });
     }
@@ -59,36 +95,35 @@ const getUser = async (req, res) => {
 // const webhookEventHandler = function (payload) {
 //   console.log("webhook", payload);
 
+// const {name,email,phoneno}=payload
+// console.log(name,email,phoneno)
+// const {name,email,phoneno}=req.body
+// if(!name || ! email || !phoneno)
+// {
+//   res.status(400).json({
+//       success:false,
+//       message:"all fields are required"
+//   })
+// }
+// const {name,email,phoneno}=req.body
 
-  // const {name,email,phoneno}=payload
-  // console.log(name,email,phoneno)
-  // const {name,email,phoneno}=req.body
-  // if(!name || ! email || !phoneno)
-  // {
-  //   res.status(400).json({
-  //       success:false,
-  //       message:"all fields are required"
-  //   })
-  // }
-  // const {name,email,phoneno}=req.body
+// try{
+//      const {name,email,phoneno}=req.body
 
-  // try{
-  //      const {name,email,phoneno}=req.body
+//      const userData=new userModel({name,email,phoneno})
+//       await userData.save(userData)
+//       res.status(200).json({
+//           success:true,
+//           message:"userdata stored successfully"
+//       })
 
-  //      const userData=new userModel({name,email,phoneno})
-  //       await userData.save(userData)
-  //       res.status(200).json({
-  //           success:true,
-  //           message:"userdata stored successfully"
-  //       })
-
-  // }
-  // catch(err){
-  //   res.status(500).json({
-  //       success:false,
-  //       message:err.message
-  //   })
-  // }
+// }
+// catch(err){
+//   res.status(500).json({
+//       success:false,
+//       message:err.message
+//   })
+// }
 // };
 
 // eventEmitter.on("webhook", createUser);
@@ -101,11 +136,65 @@ const getUser = async (req, res) => {
 
 // module.exports = {runWebhook};
 
-
 // Webhook Event Listener
+
 eventEmitter.on("webhook", (payload) => {
   console.log("Webhook triggered:", payload);
 });
 
-module.exports = { createUser, getUser };
+// module.exports={notifyWebhook}
+module.exports = { createUser, getUser, notifyWebhook };
 
+// const mongoose = require("mongoose");
+// const axios = require("axios");
+
+// // Define your user schema and model
+// const userSchema = new mongoose.Schema({
+//   name: String,
+//   email: String,
+//   createdAt: { type: Date, default: Date.now },
+// });
+// const User = mongoose.model("User", userSchema);
+
+// // Function to notify webhook
+// const notifyWebhook = async (user) => {
+//   const webhookUrl = "https://example.com/webhook";
+//   try {
+//     const response = await axios.post(webhookUrl, user);
+//     console.log("Webhook notification sent successfully:", response.data);
+//   } catch (error) {
+//     console.error("Error sending webhook notification:", error.message);
+//   }
+// };
+
+// Add a new user and call webhook
+// const addUser = async (userData) => {
+//   const newUser = new User(userData);
+//   await newUser.save();
+
+//   // Call the webhook
+//   await notifyWebhook(newUser);
+// };
+
+// MongoDB Change Streams for Real-time Notifications
+// const watchUsersCollection = () => {
+//   const changeStream = User.watch();
+//   changeStream.on("change", (change) => {
+//     if (change.operationType === "insert") {
+//       const newUser = change.fullDocument;
+//       notifyWebhook(newUser);
+//     }
+//   });
+// };
+
+// Connect to MongoDB and Start Watching
+// mongoose
+//   .connect("mongodb://localhost:27017/yourDatabaseName", {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(() => {
+//     console.log("Connected to MongoDB");
+//     watchUsersCollection();
+//   })
+//   .catch((error) => console.error("Error connecting to MongoDB:", error));
