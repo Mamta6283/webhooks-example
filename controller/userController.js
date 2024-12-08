@@ -28,7 +28,7 @@ const createUser = async (req, res) => {
     await userData.save(userData);
 
     await notifyWebhook(userData);
-
+  watchUsersCollection(userData)
     console.log(userData);
     eventEmitter.emit("webhook", { name, email, phoneno });
 
@@ -44,20 +44,47 @@ const createUser = async (req, res) => {
   }
 };
 
+
 // Function to notify webhook
 const notifyWebhook = async (user) => {
-  const webhookUrl = "https://localhost:8000/webhook";
+  const webhookUrl ="https://webhooks-example-46g4issny-mamta6283s-projects.vercel.app/webhook"
+  // "https://webhooks-example-46g4issny-mamta6283s-projects.vercel.app/?vercelToolbarCode=8zmSVU07CPqcpmj/webhook"
+  // "https://webhooks-example-two.vercel.app/?vercelToolbarCode=3b7PDOaHAM2Vc9V/webhook"
+  //  "https://webhooks-example-46g4issny-mamta6283s-projects.vercel.app/webhook";
   //  https://9aa0-59-183-150-103.ngrok-free.app
 
   try {
 
-    const response = await axios.post(webhookUrl, user);
+      const response = await axios.post(webhookUrl, user, {
+        headers: {
+          Authorization: `Bearer p7m4Ztepsnw45KuMVHQ6QweL`, // Replace with your actual token
+          "Content-Type": "application/json",
+        },
+      });
+        // {
+    //   headers: {
+    //     "Content-Type": "application/json", // Specify JSON content type
+    //   },
+    // });
+    
 
     console.log("Webhook notification sent successfully:", response.data);
     console.log("this is response", response);
   } catch (error) {
     console.error("Error sending webhook notification:", error.message);
   }
+};
+
+const watchUsersCollection = async () => {
+  const changeStream = userModel.watch();
+  changeStream.on("webhook", (change) => {
+    if (change.operationType === "insert") {
+      const newUser = change.fullDocument;
+        notifyWebhook(newUser);
+      // console.log(newUser)
+
+    }
+  });
 };
 
 const getUser = async (req, res) => {
