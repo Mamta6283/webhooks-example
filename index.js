@@ -60,10 +60,74 @@ app.use('/',routes)
 // }
 
 
+// const SECRET = "your-super-secure-secret"; // Your shared secret
+// const SECRET = crypto.randomBytes(32).toString('hex');
 
-app.listen(port,()=>{
+// app.post("/webhook-testing", (req, res) => {
+//   const payload = JSON.stringify(req.body);
+//   const signature = req.headers["x-hub-signature-256"];
+
+//   if (!signature) {
+//     return res.status(403).send("No signature found");
+//   }
+
+//   // Generate the hash
+//   const hash = `sha256=${crypto.createHmac("sha256", SECRET).update(payload).digest("hex")}`;
+
+//   // Compare the hashes securely
+//   if (crypto.timingSafeEqual(Buffer.from(hash), Buffer.from(signature))) {
+//     console.log("Webhook verified:", req.body);
+//     res.status(200).send("Webhook received!");
+//   } else {
+//     console.error("Invalid signature");
+//     res.status(403).send("Invalid signature");
+//   }
+// });
+
+
+// app.post("/webhook-testing", async (req, res) => {
+//     try {
+//       const payload = JSON.stringify(req.body); // Convert request body to JSON
+//       const signature = req.headers["x-hub-signature-256"]; // GitHub's signature header
+  
+//       if (!signature) {
+//         // Send response if the signature is missing
+//         res.status(403).send("No signature found");
+//         return; // Ensure no further processing happens
+//       }
+  
+//       // Generate hash using the secret
+//       const hash = `sha256=${crypto.createHmac("sha256", SECRET).update(payload).digest("hex")}`;
+  
+//       if (hash !== signature) {
+//         // Send response if the signature doesn't match
+//         res.status(403).send("Invalid signature");
+//         return; // Ensure no further processing happens
+//       }
+  
+//       // Simulate an async operation (e.g., saving data to the database)
+//       console.log("Webhook verified:", req.body);
+//       await new Promise((resolve) => setTimeout(resolve, 500)); // Simulated delay
+  
+//       // Send success response
+//       res.status(200).send("Webhook received and verified!");
+//     } catch (error) {
+//       console.error("Error processing webhook:", error);
+  
+//       // Handle unexpected errors
+//       if (!res.headersSent) {
+//         res.status(500).send("Internal server error");
+//       }
+//     }
+//   });
+  
+
+
+  
+app.listen(port,'0.0.0.0',()=>{
     console.log(`click here: http://localhost:${port}`)
 })
+
 
 // C:\Users\mamta\AppData\Local/ngrok/ngrok.yml---path of configuration file of authorize
 

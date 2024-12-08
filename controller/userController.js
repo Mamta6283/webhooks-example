@@ -2,6 +2,7 @@ const userModel = require("../userModel/userModel");
 const event = require("events");
 const eventEmitter = new event.EventEmitter();
 const axios = require("axios");
+
 const createUser = async (req, res) => {
   // console.log("request body ",req.body)
 
@@ -45,10 +46,11 @@ const createUser = async (req, res) => {
 
 // Function to notify webhook
 const notifyWebhook = async (user) => {
-  const webhookUrl =
-    "https://9535-2409-40d1-dc-8f56-1094-d3fb-f093-df5a.ngrok-free.app/webhook";
+  const webhookUrl = "https://localhost:8000/webhook";
+  //  https://9aa0-59-183-150-103.ngrok-free.app
 
   try {
+
     const response = await axios.post(webhookUrl, user);
 
     console.log("Webhook notification sent successfully:", response.data);
@@ -198,3 +200,8 @@ module.exports = { createUser, getUser, notifyWebhook };
 //     watchUsersCollection();
 //   })
 //   .catch((error) => console.error("Error connecting to MongoDB:", error));
+
+
+
+//back end ko server pe pana padega
+//api/v1/admin
