@@ -25,6 +25,7 @@ const createUser = async (req, res) => {
     //   // Increment the interaction count
     //   userData.interactions += 1;
     // }
+
     await userData.save(userData);
 
     await notifyWebhook(userData);
@@ -47,7 +48,10 @@ const createUser = async (req, res) => {
 
 // Function to notify webhook
 const notifyWebhook = async (user) => {
-  const webhookUrl ="https://webhooks-example-46g4issny-mamta6283s-projects.vercel.app/webhook"
+  const webhookUrl =" https://483e-2409-40d1-1126-b952-a0a7-3fda-d7fa-29bc.ngrok-free.app/webhook"
+  // "https://webhook.site/a89e3c04-1895-40b1-95e6-a5b60c17f7a2/webhook"
+  // "https://webhooks-example-46g4issny-mamta6283s-projects.vercel.app/webhook"
+
   // "https://webhooks-example-46g4issny-mamta6283s-projects.vercel.app/?vercelToolbarCode=8zmSVU07CPqcpmj/webhook"
   // "https://webhooks-example-two.vercel.app/?vercelToolbarCode=3b7PDOaHAM2Vc9V/webhook"
   //  "https://webhooks-example-46g4issny-mamta6283s-projects.vercel.app/webhook";
@@ -55,12 +59,13 @@ const notifyWebhook = async (user) => {
 
   try {
 
-      const response = await axios.post(webhookUrl, user, {
-        headers: {
-          Authorization: `Bearer p7m4Ztepsnw45KuMVHQ6QweL`, // Replace with your actual token
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(webhookUrl, user)
+      //   {
+      //   headers: {
+      //     Authorization: `Bearer MbyVmyl8kaJyaDp6s0ATRXSI`, // Replace with your actual token
+      //     "Content-Type": "application/json",
+      //   },
+      // });
         // {
     //   headers: {
     //     "Content-Type": "application/json", // Specify JSON content type
@@ -70,10 +75,24 @@ const notifyWebhook = async (user) => {
 
     console.log("Webhook notification sent successfully:", response.data);
     console.log("this is response", response);
-  } catch (error) {
+  } 
+ 
+  catch (error) {
     console.error("Error sending webhook notification:", error.message);
+
+    // Log detailed error for debugging
+    if (error.response) {
+      // console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+      console.error("Response headers:", error.response.headers);
+    } else if (error.request) {
+      console.error("No response received:", error.request);
+    } else {
+      console.error("Error in request setup:", error.message);
+    }
   }
-};
+}
+// };
 
 const watchUsersCollection = async () => {
   const changeStream = userModel.watch();
@@ -104,7 +123,10 @@ const getUser = async (req, res) => {
       res.json({
         message: "no user ",
       });
-    } else {
+    } 
+    
+    else
+     {
       res.status(500).json({
         success: true,
         totalUsers, //totalusers
@@ -124,36 +146,6 @@ const getUser = async (req, res) => {
 // const webhookEventHandler = function (payload) {
 //   console.log("webhook", payload);
 
-// const {name,email,phoneno}=payload
-// console.log(name,email,phoneno)
-// const {name,email,phoneno}=req.body
-// if(!name || ! email || !phoneno)
-// {
-//   res.status(400).json({
-//       success:false,
-//       message:"all fields are required"
-//   })
-// }
-// const {name,email,phoneno}=req.body
-
-// try{
-//      const {name,email,phoneno}=req.body
-
-//      const userData=new userModel({name,email,phoneno})
-//       await userData.save(userData)
-//       res.status(200).json({
-//           success:true,
-//           message:"userdata stored successfully"
-//       })
-
-// }
-// catch(err){
-//   res.status(500).json({
-//       success:false,
-//       message:err.message
-//   })
-// }
-// };
 
 // eventEmitter.on("webhook", createUser);
 
@@ -232,3 +224,6 @@ module.exports = { createUser, getUser, notifyWebhook };
 
 //back end ko server pe pana padega
 //api/v1/admin
+
+
+

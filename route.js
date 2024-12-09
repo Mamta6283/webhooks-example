@@ -109,6 +109,44 @@ router.get('/webhook',getUser)
 //     }
 //   });
 
+//  To store accumulated data
+let webhookData = [];
+
+// POST endpoint to add data
+router.post('/add-data', (req, res) => {
+    const { name, age } = req.body;
+
+    // Validate if both name and age are provided
+    if (!name || !age) {
+        return res.status(400).json({ status: 'error', message: 'Name and Age are required' });
+    }
+
+    // Add the data to webhookData array
+    webhookData.push({ name, age });
+
+    res.status(200).json({
+        status: 'success',
+        message: 'Data added successfully',
+        data: { name, age }
+    });
+});
+
+
+// Webhook endpoint to view accumulated data
+router.get('/webhook-test', (req, res) => {
+
+    // Print the accumulated data
+    console.log('Webhook received data:', webhookData);
+
+    // Respond back with the accumulated data
+    res.status(200).json({
+
+        status: 'success',
+        message: 'Webhook received the data',
+        data: webhookData
+        
+    });
+});
 
 
 module.exports=router;
